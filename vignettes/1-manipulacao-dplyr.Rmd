@@ -16,6 +16,10 @@ output:
 # 
 # data(pnud_muni, package = 'abjutils')
 # names(pnud_muni)[names(pnud) %>% stringr::str_detect("(Muni)?(pio)")] <- "municipio"
+
+library(magrittr)
+library(tidyr)
+library(mcUFSCar2015)
 ```
 
 pipe
@@ -46,6 +50,8 @@ sqrt(sum(x))
 ```
 
 ## Por quê o pipe é legal?
+
+### Exemplo: Receita de bolo
 
 ```{r, eval=FALSE}
 esfrie(asse(coloque(bata(acrescente(recipiente(
@@ -134,6 +140,16 @@ list(m1, m2) %>% lapply(coef)
 dplyr
 ===============================================================================
 
+## Motivação
+
+“(...) The fact that data science exists as a field is a 
+colossal failure of statistics. To me, [what I do] is what statistics is all 
+about. It is gaining insight from data using modelling and visualization. 
+Data munging and manipulation is hard and statistics has just said that’s 
+not our domain.”
+
+Hadley Wickham
+
 ## Manipulação de dados com dplyr
 
 - Manipulação: tarefa dolorosa e demorada. 
@@ -142,9 +158,8 @@ dplyr
 ## Introdução
 
 - `dplyr` é um dos pacotes mais úteis para manipulação de dados.
-- Alia simplicidade e eficiência de forma elegante. 
-- Aproveita as vantagens do `%>%`.
-- Códigos tendem a ficar mais legíveis e organizados.
+- Simplicidade + eficiência + elegância. 
+- Aproveita o `%>%`.
 - Sem perder velocidade de execução.
 - É uma revolução na forma de programar em `R`.
 
@@ -157,7 +172,7 @@ library(dplyr) # mensagens de warning chatas
 ## Trabalhando com tbl e tbl_df
 
 ```{r}
-iris %>% tbl_df
+cdg %>% tbl_df
 ```
 
 ## Os cinco verbos do dplyr {.build}
@@ -185,28 +200,30 @@ dplyr::select
 
 - Utilizar `starts_with(x)`, `contains(x)`, `matches(x)`, `one_of(x)`, etc.
 - Colocar nomes, índices, e intervalos de variáveis com `:`.
+- Especificar variáveis que você não quer com `-`.
 
 ```{r, eval=FALSE}
 # especificando nomes (maneira mais usual)
-pnud_muni %>%
-  select(ano, uf, municipio, idhm)
+cdg %>%
+  select(mandante, placar, visitante)
 ```
 
 ```{r, eval=FALSE}
 # por indice (nao recomendavel!)
-pnud_muni %>%
-  select(1:10)
+cdg %>%
+  select(1:5)
 ```
 
 ```{r, eval=FALSE}
 # intervalos e funcoes auxiliares (para economizar trabalho)
-pnud_muni %>%
-  select(ano:municipio, starts_with('idhm'))
+cdg %>%
+  select(ano, placar, starts_with('p_'), -p_vitorioso)
 ```
 
 ## Exercício
 
-Selecione município, estado, ano, coeficiente de gini e todas as medidas de idhm.
+Selecione ano, todas as variáveis relacionadas ao 
+mandante e todas as variáveis relacionadas ao visitante
 
 dplyr::filter
 ===============================================================================
@@ -217,41 +234,41 @@ dplyr::filter
 - Condições separadas por vírgulas é o mesmo que separar por `&`.
 
 ```{r, eval=FALSE}
-# somente estado de SP, com IDH municipal maior que 80% no ano 2010
-pnud_muni %>%
-  select(ano, ufn, municipio, idhm) %>%
-  filter(ufn==35, idhm > .8, ano==2010)
+# somente Bahia como mandante, ano maior que 2005
+cdg %>%
+  select(ano, mandante) %>%
+  filter(mandante == 'Bahia', ano > 2005)
 ```
 
 ```{r, eval=FALSE}
 # mesma coisa que o anterior
 pnud_muni %>%
   select(ano, ufn, municipio, idhm) %>%
-  filter(ufn==35 & idhm > .8 & ano==2010)
+  filter(mandante == 'Bahia' & ano > 2005)
 ```
 
 ## filter
 
 ```{r, eval=FALSE}
-# !is.na(x)
-pnud_muni %>%
-  select(ano, ufn, municipio, idhm, pea) %>%
-  filter(!is.na(pea))
+cdg %>%
+  select(mandante, placar, visitante) %>%
+  filter(placar != '0x0')
 ```
 
 ## filter
 
 ```{r, eval=FALSE}
 # %in%
-pnud_muni %>%
-  select(ano, ufn, municipio, idhm) %>%
-  filter(municipio %in% c('CAMPINAS', 'SÃO PAULO'))
+cdg %>%
+  select(mandante, placar, visitante) %>%
+  filter(mandante %in% c('São Paulo', 'Palmeiras', 'Corinthians'))
 ```
 
 ## Exercício
 
-Selecione ano, município, ufn, gini e as medidas de idh, e depois filtre apenas para os
-casos em que o ano é 2010, o coeficiente de Gini é maior que 0.5 ou o idhm é maior que 0.7
+Seleciona ano, mandante, placar e visitante e depois filtre para jogos que 
+envolveram somente os times Internacional e Santos, que tiveram placar de 
+3x0 ou 0x3
 
 dplyr::mutate
 ===============================================================================
@@ -265,33 +282,46 @@ dplyr::mutate
 
 ```{r, eval=FALSE}
 # media de idhm_l e idhm_e
-pnud_muni %>%
-  select(ano, ufn, municipio, starts_with('idhm')) %>%
-  filter(ano==2010) %>%
-  mutate(idhm2 = (idhm_E + idhm_L)/2)
+cdg %>%
+  select(ano, mandante:visitante) %>%
+  mutate(gols_mandante = as.numeric(str_sub(placar, 1, 1)),
+         gols_visitante = as.numeric(str_sub(placar, 3, 3)))
 ```
 
 ## mutate
 
 ```{r, eval=FALSE}
 # errado
-pnud_muni %>%
-  select(ano, ufn, municipio, starts_with('idhm')) %>%
-  filter(ano==2010) %>%
-  mutate(idhm2 = mean(c(idhm_E, idhm_L)))
+cdg %>%
+  select(ano, mandante:visitante) %>%
+  mutate(gols_mandante = as.numeric(str_sub(placar, 1, 1)),
+         gols_visitante = as.numeric(str_sub(placar, 3, 3)),
+         total_gols = sum(gols_mandante, gols_visitante))
 
-# uma alternativa (+ demorada)
-pnud_muni %>%
-  select(ano, ufn, municipio, starts_with('idhm')) %>%
-  filter(ano==2010) %>%
-  rowwise %>%
-  mutate(idhm2 = mean(c(idhm_E, idhm_L)))
+# correto
+cdg %>%
+  select(ano, mandante:visitante) %>%
+  mutate(gols_mandante = as.numeric(str_sub(placar, 1, 1)),
+         gols_visitante = as.numeric(str_sub(placar, 3, 3)),
+         total_gols = gols_mandante + gols_visitante)
+```
+
+## OBS: mais elegante com `tidyr::separate`
+
+```{r, eval=FALSE}
+# media de idhm_l e idhm_e
+cdg %>%
+  select(ano, mandante:visitante) %>%
+  separate(placar, c('gols_mandante', 'gols_visitante'), 
+           sep = 'x', remove = FALSE, convert = TRUE)
+
 ```
 
 ## Exercício
 
-Selecione ano, município, ufn, gini e as medidas de idh, depois filtre apenas para os
-casos em que o ano é 2010, e depois escreva o idhm em forma de porcentagem, com 1 casa decimal
+Selecione ano, mandante, placar, visitante e as probabilidades dos resultados no
+ano de 2011. Verifique quais as probabilidades não têm soma 100.
+Dica: usar `tidyr::extract_numeric`.
 
 dplyr::arrange
 ===============================================================================
@@ -304,28 +334,28 @@ dplyr::arrange
 ## arrange
 
 ```{r, eval=FALSE}
-pnud_muni %>%
-  select(ano, ufn, municipio, idhm) %>%
-  filter(ano==2010) %>%
-  mutate(idhm_porc = idhm * 100,
-         idhm_porc_txt = paste(idhm_porc, '%')) %>%
-  arrange(idhm)
+cdg %>%
+  select(ano, mandante:visitante, p_vitorioso) %>%
+  filter(ano == 2010) %>%
+  mutate(p_vitorioso_num = extract_numeric(p_vitorioso)) %>%
+  arrange(p_vitorioso_num)
 ```
 
 ## arrange
 
 ```{r, eval=FALSE}
-pnud_muni %>%
-  select(ano, ufn, municipio, idhm) %>%
-  filter(ano==2010) %>%
-  mutate(idhm_porc = idhm * 100,
-         idhm_porc_txt = paste(idhm_porc, '%')) %>%
-  arrange(desc(idhm))
+cdg %>%
+  select(ano, mandante:visitante, p_vitorioso) %>%
+  filter(ano == 2010) %>%
+  mutate(p_vitorioso_num = extract_numeric(p_vitorioso)) %>%
+  arrange(desc(p_vitorioso_num))
 ```
 
 ## Exercício
 
-Obtenha os 10 municipios com maior idhm em 2010 e mostre esses idhm./
+Selecione somente ano, mandante, placar, visitante.
+Filtre para ano de 2012.
+Ordene por mandante e visitante.
 
 dplyr::summarise
 ===============================================================================
@@ -339,36 +369,33 @@ dplyr::summarise
 ## summarise
 
 ```{r, eval=FALSE}
-pnud_muni %>%
-  filter(ano==2010) %>%  
-  group_by(ufn) %>%
-  summarise(n=n(), 
-            idhm_medio=mean(idhm),
-            populacao_total=sum(popt)) %>%
-  arrange(desc(idhm_medio))
+cdg %>%
+  select(ano, mandante:visitante) %>%
+  mutate(gols_mandante = as.numeric(str_sub(placar, 1, 1)),
+         gols_visitante = as.numeric(str_sub(placar, 3, 3)),
+         total_gols = gols_mandante + gols_visitante) %>% 
+  group_by(ano) %>% 
+  summarise(total = sum(total_gols), media = mean(total_gols))
 ```
 
-## summarise
+## count
 
 ```{r, eval=FALSE}
-pnud_muni %>%
-  filter(ano==2010) %>%  
-  count(ufn)
+cdg %>%
+  count(mandante, ano)
 ```
 
-## summarise
+## summarise equivalente
 
 ```{r, eval=FALSE}
-pnud_muni %>%
-  group_by(ano, ufn) %>%
-  tally() %>%
-  head # nao precisa de parenteses!
+cdg %>%
+  group_by(mandante, ano) %>% 
+  summarise(n = n())
 ```
 
 ## Exercício
 
-Calcule a expectativa de vida média de cada estado, ponderada pela população dos municípios no ano 2000.
-
+Faça uma tabela descritiva da distribuição do número de gols em cada ano.
 
 tidyr
 ===============================================================================
@@ -383,27 +410,40 @@ tidyr
 library(tidyr)
 ```
 
-## spread
+## Exemplo
 
-- "Joga" uma variável nas colunas
-
-```{r, eval=FALSE}
-pnud_muni %>%
-  group_by(ano, ufn) %>%
-  summarise(populacao=sum(popt)) %>%
-  ungroup() %>%
-  spread(ano, populacao)
+```{r}
+comparacao <- cdg %>% 
+  select(ano, mandante:visitante) %>% 
+  filter(mandante %in% c('Corinthians', 'Vasco') |
+           visitante %in% c('Corinthians', 'Vasco')) %>% 
+  separate(placar, c('gols_mandante', 'gols_visitante'), 
+           sep = 'x', remove = TRUE, convert = TRUE) %>% 
+  group_by(ano) %>% 
+  summarise(corinthians = sum(gols_mandante[mandante == 'Corinthians']),
+            corinthians = corinthians + sum(gols_visitante[visitante == 'Corinthians']),
+            vasco = sum(gols_mandante[mandante == 'Vasco']),
+            vasco = vasco + sum(gols_visitante[visitante == 'Vasco']))
+comparacao
 ```
 
 ## gather
 
 - "Empilha" o banco de dados
 
-```{r, eval=FALSE}
-pnud_muni %>%
-  filter(ano==2010) %>%
-  select(ufn, municipio, starts_with('idhm_')) %>%
-  gather(tipo_idh, idh, starts_with('idhm_'))
+```{r eval=FALSE}
+comparacao %>% 
+  gather(time, gols, -ano)
+```
+
+## spread
+
+- "Joga" uma variável nas colunas
+
+```{r eval=FALSE}
+comparacao %>% 
+  gather(time, gols, -ano) %>% 
+  spread(ano, gols)
 ```
 
 ## Exercício
@@ -415,9 +455,41 @@ Verifique se `gather(spread(dados))`, `spread(gather(dados))` e `dados` são equ
 - `unite` junta duas ou mais colunas usando algum separador (`_`, por exemplo).
 - `separate` faz o inverso de `unite`, e uma coluna em várias usando um separador.
 
+## Miscelânea
+
+### Apenas jogos no mês de Dezembro
+
+```{r eval=FALSE}
+library(lubridate)
+cdg %>% 
+  mutate(data_jogo = ifelse(ano < 2007, sprintf('%s/%s', data_jogo, ano), data_jogo),
+         data_jogo = as.Date(dmy(data_jogo))) %>% 
+  filter(month(data_jogo) == 12)
+```
+
+## Miscelânea
+
+### Times com maiores médias de gols
+
+```{r eval=FALSE}
+cdg %>% 
+  filter(mandante != '') %>% 
+  select(mandante:visitante) %>% 
+  separate(placar, c('gols_mandante', 'gols_visitante'), 
+         sep = 'x', remove = TRUE, convert = TRUE) %>% 
+  unite(mandante_u, mandante, gols_mandante, sep = '_') %>% 
+  unite(visitante_u, visitante, gols_visitante, sep = '_') %>% 
+  gather() %>% 
+  separate(value, c('time', 'gols'), sep = '_', convert = TRUE) %>% 
+  group_by(time) %>% 
+  summarise(n_jogos = n(), media = mean(gols), desv_pad = sd(gols)) %>% 
+  arrange(desc(media))
+```
+
 ## Um pouco mais de manipulação de dados
 
-- Para juntar tabelas, usar `inner_join`, `left_join`, `anti_join`, etc.
+- Para juntar tabelas, usar `inner_join`, `left_join`, `anti_join` etc.
+- Window functions com `min_rank`, `percent_rank` etc.
 - Para realizar operações mais gerais, usar `do`.
 - Para retirar duplicatas, utilizar `distinct`.
 
@@ -425,6 +497,6 @@ Verifique se `gather(spread(dados))`, `spread(gather(dados))` e `dados` são equ
 
 - `stringr` para trabalhar com textos.
 - `lubridate` para trabalhar com datas.
-- `rvest` para trabalhar com arquivos HTML.
+- `httr`, `xml2` e `rvest` foram usados para baixar os dados da web.
 
 <hr/ >
