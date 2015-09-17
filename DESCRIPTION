@@ -8,3 +8,13 @@ License: What license is it under?
 LazyData: true
 Suggests: knitr
 VignetteBuilder: knitr
+Imports: dplyr,
+    tidyr,
+    devtools,
+    stringr,
+    roxygen2,
+    knitr,
+    httr,
+    xml2,
+    rvest,
+    caret
