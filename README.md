@@ -54,7 +54,7 @@ do [Curso R neste link](http://curso-r.github.io/). É rápido!
 
 ## Setup
 
-Utilizaremos as seguintes configurações
+Utilizaremos as seguintes configurações (não se assuste)
 
 ```
 Session info ------------------------------------------------------------------
@@ -67,14 +67,59 @@ Session info ------------------------------------------------------------------
  tz       <NA>                        
 
 Packages ----------------------------------------------------------------------
- package    * version date       source                            
- devtools   * 1.7.0   2015-01-17 CRAN (R 3.2.0)                    
- digest     * 0.6.8   2014-12-31 CRAN (R 3.2.0)                    
- htmltools  * 0.2.6   2014-09-08 CRAN (R 3.2.0)                    
- memoise    * 0.2.1   2014-04-22 CRAN (R 3.2.0)                    
- rmarkdown  * 0.7.3   2015-08-28 Github (rstudio/rmarkdown@ee2f13c)
- rsconnect  * 0.4.1.4 2015-08-28 Github (rstudio/rsconnect@295276c)
- rstudioapi * 0.3.1   2015-04-07 CRAN (R 3.2.0)   
+ package       * version    date       source                            
+ assertthat      0.1        2013-12-06 CRAN (R 3.2.0)                    
+ BradleyTerry2   1.0-6      2015-02-09 CRAN (R 3.2.0)                    
+ brglm           0.5-9      2013-11-08 CRAN (R 3.2.0)                    
+ car             2.1-0      2015-09-03 CRAN (R 3.2.2)                    
+ caret         * 6.0-52     2015-07-17 CRAN (R 3.2.2)                    
+ codetools       0.2-14     2015-07-15 CRAN (R 3.2.2)                    
+ colorspace      1.2-6      2015-03-11 CRAN (R 3.2.0)                    
+ curl            0.9.3      2015-08-25 CRAN (R 3.2.2)                    
+ DBI             0.3.1      2014-09-24 CRAN (R 3.2.0)                    
+ devtools      * 1.8.0      2015-05-09 CRAN (R 3.2.2)                    
+ digest          0.6.8      2014-12-31 CRAN (R 3.2.0)                    
+ dplyr         * 0.4.3.9000 2015-09-04 Github (hadley/dplyr@5489216)     
+ foreach         1.4.2      2014-04-11 CRAN (R 3.2.0)                    
+ ggplot2       * 1.0.1.9003 2015-09-01 Github (hadley/ggplot2@816d789)   
+ git2r           0.11.0     2015-08-12 CRAN (R 3.2.2)                    
+ gtable          0.1.2      2012-12-05 CRAN (R 3.2.0)                    
+ gtools          3.5.0      2015-05-29 CRAN (R 3.2.2)                    
+ htmltools       0.2.6      2014-09-08 CRAN (R 3.2.0)                    
+ httr          * 1.0.0      2015-06-25 CRAN (R 3.2.2)                    
+ iterators       1.0.7      2014-04-11 CRAN (R 3.2.0)                    
+ knitr         * 1.11       2015-08-14 CRAN (R 3.2.2)                    
+ lattice       * 0.20-33    2015-07-14 CRAN (R 3.2.1)                    
+ lme4            1.1-9      2015-07-05 Github (lme4/lme4@a8538aa)        
+ lubridate     * 1.3.3      2013-12-31 CRAN (R 3.2.0)                    
+ magrittr        1.5        2014-11-22 CRAN (R 3.2.0)                    
+ MASS            7.3-44     2015-08-30 CRAN (R 3.2.2)                    
+ Matrix          1.2-2      2015-07-08 CRAN (R 3.2.1)                    
+ MatrixModels    0.4-1      2015-08-22 CRAN (R 3.2.2)                    
+ memoise         0.2.1      2014-04-22 CRAN (R 3.2.0)                    
+ mgcv            1.8-7      2015-07-23 CRAN (R 3.2.1)                    
+ minqa           1.2.4      2014-10-09 CRAN (R 3.2.0)                    
+ munsell         0.4.2      2013-07-11 CRAN (R 3.2.0)                    
+ nlme            3.1-122    2015-08-19 CRAN (R 3.2.2)                    
+ nloptr          1.0.4      2014-08-04 CRAN (R 3.2.0)                    
+ nnet            7.3-11     2015-08-30 CRAN (R 3.2.2)                    
+ pbkrtest        0.4-2      2014-11-13 CRAN (R 3.2.0)                    
+ plyr          * 1.8.3.9000 2015-08-10 Github (hadley/plyr@9d8294e)      
+ quantreg        5.19       2015-08-31 CRAN (R 3.2.2)                    
+ R6              2.1.1      2015-08-19 CRAN (R 3.2.2)                    
+ Rcpp            0.12.0     2015-07-25 CRAN (R 3.2.1)                    
+ reshape2        1.4.1      2014-12-06 CRAN (R 3.2.0)                    
+ rmarkdown     * 0.8        2015-08-30 CRAN (R 3.2.2)                    
+ rsconnect       0.4.1.4    2015-08-28 Github (rstudio/rsconnect@295276c)
+ rversions       1.0.2      2015-07-13 CRAN (R 3.2.2)                    
+ rvest         * 0.2.0.9000 2015-09-02 Github (hadley/rvest@d482ed0)     
+ scales        * 0.3.0.9000 2015-09-09 Github (hadley/scales@7fc502c)    
+ SparseM         1.7        2015-08-15 CRAN (R 3.2.2)                    
+ stringi         0.5-5      2015-06-29 CRAN (R 3.2.2)                    
+ stringr       * 1.0.0.9000 2015-09-04 Github (hadley/stringr@5f9319b)   
+ tidyr         * 0.3.1.9000 2015-09-14 Github (hadley/tidyr@49b30ea)     
+ xml2          * 0.1.2      2015-09-01 CRAN (R 3.2.2)                    
+ yaml            2.1.13     2014-06-12 CRAN (R 3.2.0) 
 ```
 
 Além disso, teremos o programa `pandoc` já instalado.
