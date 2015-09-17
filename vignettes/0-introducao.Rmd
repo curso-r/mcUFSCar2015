@@ -1,0 +1,109 @@
+---
+title: "Introdução"
+author: "Julio Trecenti"
+date: "September 16, 2015"
+output: 
+  ioslides_presentation: 
+    #incremental: yes
+    logo: figures/logo.png
+    widescreen: yes
+---
+
+# Algumas novidades essenciais
+
+## RStudio
+
+<div align='center'>
+  <img src="figures/RStudio-Ball.png" height=450px" width="450px"/>
+</div>
+
+## R Markdown e knitr
+
+<div align='center'>
+  <img src="figures/logo-1.jpg" height=195px" width="300px" />
+  <img src="figures/knit-logo.png" height=210px" width="300px" />
+</div>
+
+## Hadleyverse
+
+<div align='center'>
+  <img src="figures/4196.jpg" height=360px" width="352px"/>
+  <img src="figures/hadleyverse.png" height=450px" width="500px"/>
+</div>
+
+Veja os pacotes desta página https://github.com/hadley
+
+## Git e GitHub
+
+<div align='center'>
+  <img src="figures/git_github.jpg"/>
+</div>
+
+### `git clone`
+### `git commit`
+### `git pull`
+### `git push`
+
+## Stackoverflow
+
+<div align='center'>
+  <img src="figures/so-logo.png"/ width="60%">
+</div>
+
+### Sistema de rank para perguntas e usuários
+
+### Perguntas e respostas em alta qualidade
+
+### Além da programação! Ver CrossValidated
+
+## Pesquise!
+
+### **Shiny** - Aplicações interativas na web usando o R
+
+### **R Consortium** - Investimento pesado das maiores companhias no desenvolvimento do R
+
+### **Kaggle** - Desafios de data science
+
+### **Coursera** - Cursos online grátis sobre R e muito mais
+
+### **R Jobs** - Plataforma de divulgação de empregos que envolvem o R
+
+### Leia [http://kbroman.org/hipsteR/](http://kbroman.org/hipsteR/)
+
+### ...
+
+# Nosso curso
+
+## 3 aulas
+
+### Manipulação de dados com `dplyr` e `tidyr`
+
+### Visualização de dados com `ggplot2` e relatórios com `rmarkdown` e `knitr`
+
+### Desenvolvimento de pacotes com `devtools` e `roxygen2`
+
+## Outros pacotes 
+
+### `plyr` para generalização das funções `lapply`, `sapply`, `apply` etc
+
+### `stringr` para manipulação de textos
+
+### `lubridate` para manipulação de datas
+
+### `httr`, `xml2` e `rvest` para raspagem de dados da web (web scraping)
+
+### `caret` para construção de modelos preditivos
+
+## Nossa base de dados
+
+### Futebol
+
+- Dados retirados do site [chance de gol](http://www.chancedegol.com.br).
+
+Acesse a [página do curso no github](https://github.com/curso-r/mcUFSCar2015)
+
+## Pacotes utilizados
+
+Acesse a [página do curso no github](https://github.com/curso-r/mcUFSCar2015)
+
+# &nbsp;
