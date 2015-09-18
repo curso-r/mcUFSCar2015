@@ -2,15 +2,14 @@
 title: "Visualização de dados"
 author: "Julio Trecenti"
 date: "September 4, 2015"
-output: 
-  ioslides_presentation: 
-    #incremental: yes
-    logo: figures/logo.png
-    widescreen: yes
+output: slidy_presentation
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
+library(dplyr)
+library(mcUFSCar2015)
+library(tidyr)
 ```
 
 ggplot2
@@ -69,11 +68,9 @@ plot(x, y)
 qplot(x, y, geom="point")
 ```
 
-
 ## Motivação 3
 
 ```{r, echo=FALSE}
-
 df <- data.frame(usa = rep(c("Sim", "Não"), c(5, 5)),
                  expec = c(70, 80, 85, 96, 121, 78, 74, 71, 66, 59),
                  ano = rep(2010:2014, 2))
@@ -83,8 +80,6 @@ ggplot(df, aes(x = ano, y = expec, fill = usa)) +
   xlab("Ano") +
   ylab("Expectativa de vida") +
   labs(fill = "Utiliza o ggplot?")
-  
-
 ```
 
 ## Motivação 3
@@ -102,13 +97,11 @@ ggplot(df, aes(x = usa, y = salario, fill = usa)) +
   xlab("Utiliza o ggplot") +
   ylab("Salário (reais)") +
   scale_y_continuous(labels = scales::dollar)
-  
 ```
 
 ## Motivação 3
 
 ```{r, echo=FALSE}
-
 df <- data.frame(ano = 2010:2020,
                  prop = c(0.01, 0.09, 0.14, 0.18, 0.23, 0.34, 0.39, 0.44, 0.60, 0.88, 1.1))
 
@@ -119,23 +112,62 @@ ggplot(df, aes(x = as.character(ano), y = prop, group = 1)) +
   xlab("Ano") +
   ylab("Proporção de usuários no mundo") +
   scale_y_continuous(labels = scales::percent, breaks = 0:10 / 10)
-  
 ```
 
-## Estrutura
+## Onde procurar ajuda
 
-- Dados --- `data =`
+### [http://www.rstudio.com/resources/cheatsheets/](http://www.rstudio.com/resources/cheatsheets/)
 
-- Aspectos estéticos (*mapping*) --- `aes()` 
+### [http://docs.ggplot2.org/](http://docs.ggplot2.org/)
 
-- Formas geométricas --- `geom_()`
+### [http://github.com/hadley/ggplot2-book](http://github.com/hadley/ggplot2-book)
 
-- Transformações estatísticas --- `stat =`
+## Tudo o que você precisa saber
+
+- Dados --- `data =` e aspectos estéticos (*mapping*) --- `aes()` 
+
+- Layers: 
+    - formas geométricas --- `geom_*()`
+    - transformações estatísticas --- `stat_*()`
+
+- Coordenadas --- `coord_*()`
+
+- Facets --- `facet_*()`
+
+- Theme --- `theme()`
 
 ## Exemplos
 
 ```{r}
-head(mtcars, 10)
+d <- cdg %>% 
+  separate(placar, c('gols_mandante', 'gols_visitante'), 
+           sep = 'x', remove = TRUE, convert = TRUE) %>% 
+  mutate(pts_mandante = ifelse(gols_mandante > gols_visitante, 3, 
+                               ifelse(gols_mandante == gols_visitante, 1, 0)),
+         pts_visitante = 3 - pts_mandante,
+         pts_visitante = ifelse(pts_visitante == 2, 1, pts_visitante)) %>% 
+  unite(mandante_u, mandante, pts_mandante, sep = '_') %>% 
+  unite(visitante_u, visitante, pts_visitante, sep = '_') %>%
+  select(ano, ends_with('_u')) %>% 
+  gather(key, value, -ano) %>% 
+  separate(value, c('time', 'pontos'), sep = '_', convert = TRUE) %>% 
+  group_by(ano, time) %>% 
+  summarise(pontos = sum(pontos)) %>% 
+  ungroup() %>% 
+  arrange(ano, desc(pontos))
+```
+
+## Dados
+
+```{r}
+d
+```
+
+
+## Dados
+
+```{r}
+tbl_df(mtcars)
 ```
 
 ## Exemplos
@@ -145,9 +177,11 @@ ggplot(data = mtcars, aes(x = disp, y = mpg)) +
   geom_point()
 ```
 
+## Exemplos
+
 ```{r}
 # mais ou menos compatível com magrittr
-library(magrittr)
+suppressMessages(library(magrittr))
 mtcars %>%
   ggplot(aes(x = disp, y = mpg)) + # deveria ser %>% e nao +, né? :(
   geom_point()
@@ -157,7 +191,6 @@ mtcars %>%
 
 ```{r}
 
-
 ggplot(data = mtcars) +
   geom_point(aes(x = disp, y = mpg))
 
@@ -165,12 +198,20 @@ ggplot(data = mtcars) +
 
 ## Exemplos
 
-```{r}
+```{r fig.height=4}
 
-ggplot(data = mtcars) +
-  geom_point(aes(x = disp, y = mpg))
+cdg %>% 
+  separate(placar, c('gols_mandante', 'gols_visitante'), 
+           sep = 'x', remove = TRUE, convert = TRUE) %>% 
+  select(ano, starts_with('gols')) %>% 
+  gather(lugar, gols, -ano) %>% 
+  group_by(ano, lugar) %>% 
+  summarise(gols = sum(gols)) %>% 
+  ggplot(aes(x = gols, fill = lugar)) +
+  geom_dotplot(binwidth = 20)
 
 ```
+
 
 ## Exemplos
 
@@ -192,31 +233,24 @@ ggplot(data = mtcars) +
 
 ## Exemplos {.build}
 
-```{r, eval=F}
+```{r}
 
 ggplot(data = mtcars) +
   geom_point(aes(x = disp, y = mpg), colour = "blue", size = 5, 
              shape = 2)
 ```
 
-```{r, echo=F}
+## Exercício
 
-ggplot(data = mtcars) +
-  geom_point(aes(x = disp, y = mpg), colour = "blue", size = 5, 
-             shape = 2)
+Faça o gráfico que sempre aparece no RStudio quando você pesquisa no google
 
+```{r}
+diamonds
 ```
 
 ## Exemplos {.build}
 
-```{r, eval=FALSE}
-
-ggplot(data = mtcars) +
-  geom_point(aes(x = cyl, y = mpg), stat = "summary", fun.y= mean)
-
-```
-
-```{r, echo = FALSE}
+```{r}
 
 ggplot(data = mtcars) +
   geom_point(aes(x = cyl, y = mpg), stat = "summary", fun.y= mean)
@@ -225,14 +259,7 @@ ggplot(data = mtcars) +
 
 ## Exemplos {.build}
 
-```{r, eval = FALSE}
-
-ggplot(data = mtcars) +
-  geom_line(aes(x = cyl, y = mpg), stat = "summary", fun.y= mean)
-
-```
-
-```{r, echo = FALSE}
+```{r}
 
 ggplot(data = mtcars) +
   geom_line(aes(x = cyl, y = mpg), stat = "summary", fun.y= mean)
@@ -251,15 +278,7 @@ ggplot(data = mtcars) +
 
 ## Exemplos
 
-```{r, fig.height=3, fig.width=5, eval = FALSE}
-
-ggplot(data = mtcars) +
-  geom_boxplot(aes(x = as.character(gear), y = mpg, 
-                   fill = as.character(gear)))
-
-```
-
-```{r, fig.height=3, fig.width=5, echo = FALSE}
+```{r, fig.height=3, fig.width=5}
 
 ggplot(data = mtcars) +
   geom_boxplot(aes(x = as.character(gear), y = mpg, 
@@ -280,7 +299,14 @@ ggplot(data = mtcars) +
 
 ```
 
-## Desafio {.build}
+## Exercício {.build}
+
+```{r}
+df <- data.frame(ano = 2010:2020,
+                 prop = c(0.01, 0.09, 0.14, 0.18, 0.23, 
+                          0.34, 0.39, 0.44, 0.60, 0.88, 1.1))
+
+```
 
 ```{r, echo=FALSE, fig.height=3, fig.width=5}
 
@@ -296,11 +322,57 @@ ggplot(df, aes(x = as.character(ano), y = prop, group = 1)) +
   
 ```
 
-```{r}
-head(df, 3) # Shape = 22 e Size = 5.
+## Exercício
+
+```{r echo=FALSE}
+d %>% 
+  filter(ano >= 2006) %>% 
+  group_by(ano) %>% 
+  mutate(posicao = row_number(), 
+         grupo = ifelse(posicao <= 4, 'G4', 
+                        ifelse(posicao >= 17, 'Rebaixados', 'Nada'))) %>% 
+  ggplot(aes(x = ano, y = pontos, colour = grupo, group = time)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  xlab('Ano') +
+  ylab('Pontos') +
+  labs(colour = 'Grupo')
 ```
 
-ggvis
+
+## Usando datas
+
+```{r}
+library(lubridate)
+library(scales)
+cdg %>% 
+  filter(ano >= 2007) %>% 
+  mutate(data_jogo = as.Date(dmy(data_jogo))) %>% 
+  separate(placar, c('gols_mandante', 'gols_visitante'), 
+           sep = 'x', remove = TRUE, convert = TRUE) %>% 
+  mutate(gols = gols_mandante + gols_visitante) %>% 
+  group_by(data_jogo, ano) %>% 
+  summarise(gols = sum(gols)) %>% 
+  ungroup %>% 
+  # filter(ano == 2014) %>% 
+  ggplot(aes(x = data_jogo, y = gols, colour = factor(ano))) +
+  geom_point() +
+  geom_line()
+```
+
+## Mapas
+
+```{r}
+data('br_uf_map', package = 'abjutils')
+ggplot(br_uf_map) +
+  geom_map(aes(x = long, y = lat, map_id = id), map = br_uf_map,
+           fill = 'transparent', colour = 'black') +
+  coord_equal()
+```
+
+
+Extras
 ===============================================================================
 
 ## ggvis
@@ -316,27 +388,21 @@ ggvis
 
 ```{r}
 library(ggvis)
-
 all_values <- function(x) {
   if(is.null(x)) return(NULL)
   paste0(names(x), ": ", format(x), collapse = "<br />")
 }
-
 base <- mtcars %>% ggvis(x = ~wt, y = ~mpg) %>%
   layer_points()
+```
 
+## Exemplo: tooltip
+
+```{r}
 base %>% add_tooltip(all_values, "hover")
-base %>% add_tooltip(all_values, "click")
 ```
 
 
-## Exercício
-
-dygraphs
-===============================================================================
-
-- Apropriado para séries temporais
-- ...
 
 
 

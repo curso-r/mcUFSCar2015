@@ -19,7 +19,7 @@ output:
 
 library(magrittr)
 library(tidyr)
-library(mcUFSCar2015)
+library(mcUFSCar2015)  
 ```
 
 pipe
