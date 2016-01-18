@@ -24,4 +24,5 @@ Imports: dplyr,
     servr,
     lubridate,
     dygraphs,
-    leaflet
+    leaflet,
+    RMySQL
