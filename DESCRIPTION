@@ -24,5 +24,4 @@ Imports: dplyr,
     servr,
     lubridate,
     dygraphs,
-    leaflet,
-    abjutils
+    leaflet
