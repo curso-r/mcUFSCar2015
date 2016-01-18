@@ -10,10 +10,13 @@ Suggests: knitr
 VignetteBuilder: knitr
 Imports: dplyr,
     tidyr,
-    devtools,
-    stringr,
-    roxygen2,
     knitr,
-    httr,
-    xml2,
-    rvest
+    rvest,
+    caret,
+    rmarkdown,
+    digest,
+    RCurl,
+    readr,
+    readxl,
+    haven,
+    ggplot2
